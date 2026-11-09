@@ -85,7 +85,7 @@ ask_question() {
 # ==========================================
 
 echo "=========================================="
-echo "    	   Quiz name"
+echo "           SEC+ & Linux Quiz"
 echo "=========================================="
 
 ask_text "Enter your name"
@@ -95,16 +95,18 @@ echo ""
 echo "Welcome, $NAME!"
 echo "Let's test your Security+ knowledge."
 
-# QUESTIONS
+# QUESTION 1
 ask_question \
-"question" \
-"correct answer 1-4" \
-"reason for correct answer" \
-"answer 1" \
-"answer 2" \
-"answer 3" \
-"answer 4"
+"Question" \
+"Correct answer number 1-4" \
+"Correct answer explanation" \
+"Answer 1" \
+"Answer 2" \
+"Answer 3" \
+"Answer 4"
 
+# ==========================================
+# QUESTION REVIEW
 # ==========================================
 
 echo ""
@@ -125,6 +127,7 @@ else
 fi
 
 # Incorrect Answers
+# Incorrect Answers
 echo ""
 echo "========== INCORRECT ANSWERS ============"
 
@@ -132,7 +135,13 @@ if (( ${#INCORRECT_QUESTIONS[@]} == 0 )); then
     echo "No incorrectly answered questions."
 else
     for i in "${!INCORRECT_QUESTIONS[@]}"; do
-        echo "$((i + 1)). ${INCORRECT_QUESTIONS[$i]}"
+        IFS='|' read -r question your_answer correct_answer \
+            <<< "${INCORRECT_QUESTIONS[$i]}"
+
+        echo ""
+        echo "$((i + 1)). $question"
+        echo "   $your_answer"
+        echo "   $correct_answer"
     done
 fi
 

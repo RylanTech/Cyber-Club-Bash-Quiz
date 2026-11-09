@@ -333,6 +333,7 @@ else
 fi
 
 # Incorrect Answers
+# Incorrect Answers
 echo ""
 echo "========== INCORRECT ANSWERS ============"
 
@@ -340,7 +341,13 @@ if (( ${#INCORRECT_QUESTIONS[@]} == 0 )); then
     echo "No incorrectly answered questions."
 else
     for i in "${!INCORRECT_QUESTIONS[@]}"; do
-        echo "$((i + 1)). ${INCORRECT_QUESTIONS[$i]}"
+        IFS='|' read -r question your_answer correct_answer \
+            <<< "${INCORRECT_QUESTIONS[$i]}"
+
+        echo ""
+        echo "$((i + 1)). $question"
+        echo "   $your_answer"
+        echo "   $correct_answer"
     done
 fi
 
