@@ -7,6 +7,8 @@
 
 SCORE=0
 TOTAL=0
+CORRECT_QUESTIONS=()
+INCORRECT_QUESTIONS=()
 
 # Multiple-choice function
 ask_choice() {
@@ -48,22 +50,33 @@ ask_question() {
     local explanation="$3"
     shift 3
 
-    ask_choice "$question" "$@"
+    local options=("$@")
+    local user_answer
+    local selected_answer
+
+    ask_choice "$question" "${options[@]}"
+
+    user_answer="$CHOICE"
+    selected_answer="${options[$((user_answer - 1))]}"
 
     TOTAL=$((TOTAL + 1))
 
-    if [[ "$CHOICE" == "$correct" ]]; then
+    if [[ "$user_answer" == "$correct" ]]; then
         echo ""
         echo "[CORRECT]"
         SCORE=$((SCORE + 1))
+
+        CORRECT_QUESTIONS+=("$question")
     else
         echo ""
         echo "[INCORRECT]"
-        echo "Correct answer: $correct"
+
+        INCORRECT_QUESTIONS+=(
+            "$question|Your answer: $selected_answer|Correct answer: ${options[$((correct - 1))]}"
+        )
     fi
 
     echo "Explanation: $explanation"
-    echo ""
     echo "------------------------------------------"
 }
 
@@ -72,7 +85,7 @@ ask_question() {
 # ==========================================
 
 echo "=========================================="
-echo "    CompTIA Security+ SY0-701 Practice"
+echo "           SEC+ & Linux Quiz"
 echo "=========================================="
 
 ask_text "Enter your name"
@@ -182,6 +195,158 @@ ask_question \
 "Manage user passwords" \
 "Replace firewalls"
 
+
+# ==========================================
+# LINUX SECURITY+ QUESTIONS (11-20)
+# ==========================================
+
+# QUESTION 11
+ask_question \
+"Which Linux command displays file permissions and ownership?" \
+"2" \
+"The ls -l command displays file permissions, ownership, file size, and modification date." \
+"chmod" \
+"ls -l" \
+"chown" \
+"pwd"
+
+# QUESTION 12
+ask_question \
+"Which Linux command changes file permissions?" \
+"1" \
+"The chmod command modifies read, write, and execute permissions on files and directories." \
+"chmod" \
+"chown" \
+"umask" \
+"sudo"
+
+# QUESTION 13
+ask_question \
+"Which Linux file stores local user account information?" \
+"3" \
+"/etc/passwd contains user account information, including usernames and user IDs. Password hashes are typically stored in /etc/shadow." \
+"/etc/shadow" \
+"/etc/group" \
+"/etc/passwd" \
+"/var/log/auth.log"
+
+# QUESTION 14
+ask_question \
+"Which command displays authentication-related logs on many Linux distributions?" \
+"4" \
+"/var/log/auth.log is commonly used on Debian-based systems. RHEL-based systems commonly use /var/log/secure. systemd systems may also use journalctl." \
+"ls /etc" \
+"cat /etc/passwd" \
+"ps aux" \
+"cat /var/log/auth.log"
+
+# QUESTION 15
+ask_question \
+"Which Linux command allows a user to execute commands with elevated privileges?" \
+"2" \
+"sudo allows authorized users to execute commands with elevated privileges according to sudoers policy." \
+"su -" \
+"sudo" \
+"chmod" \
+"whoami"
+
+# QUESTION 16
+ask_question \
+"What does permission 755 mean in Linux?" \
+"1" \
+"755 means the owner has read, write, and execute permissions (7), while the group and others have read and execute permissions (5)." \
+"Owner: rwx, Group: r-x, Others: r-x" \
+"Owner: rw-, Group: rw-, Others: r--" \
+"Owner: r--, Group: r--, Others: r--" \
+"Owner: rwx, Group: rwx, Others: rwx"
+
+# QUESTION 17
+ask_question \
+"Which Linux command displays currently running processes?" \
+"3" \
+"The ps aux command displays a detailed snapshot of running processes." \
+"chmod" \
+"netstat" \
+"ps aux" \
+"mkdir"
+
+# QUESTION 18
+ask_question \
+"Which Linux command can identify listening network ports?" \
+"4" \
+"ss -tulnp displays listening TCP and UDP sockets and associated processes when permissions allow." \
+"ls -la" \
+"df -h" \
+"chmod -R" \
+"ss -tulnp"
+
+# QUESTION 19
+ask_question \
+"Which command is commonly used to search for suspicious text in Linux log files?" \
+"2" \
+"grep searches files for matching text patterns and is useful for identifying suspicious log entries." \
+"chmod" \
+"grep" \
+"chown" \
+"mount"
+
+# QUESTION 20
+ask_question \
+"Which Linux command displays recent system journal entries and authentication events?" \
+"1" \
+"journalctl retrieves logs collected by systemd-journald. The -u option can filter logs by service." \
+"journalctl" \
+"chmod" \
+"passwd" \
+"hostname"
+
+# QUESTION 21
+ask_question \
+"What is a linux?" \
+"3" \
+"Linux is a kernal, which is the layer between hardware and software" \
+"An operating system" \
+"A collection of software used on a computer" \
+"A kernel" \
+"A version of Windows"
+
+
+# ==========================================
+# QUESTION REVIEW
+# ==========================================
+
+echo ""
+echo "=========================================="
+echo "             QUESTION REVIEW"
+echo "=========================================="
+
+# Correct Answers
+echo ""
+echo "========== CORRECT ANSWERS =============="
+
+if (( ${#CORRECT_QUESTIONS[@]} == 0 )); then
+    echo "No correctly answered questions."
+else
+    for i in "${!CORRECT_QUESTIONS[@]}"; do
+        echo "$((i + 1)). ${CORRECT_QUESTIONS[$i]}"
+    done
+fi
+
+# Incorrect Answers
+echo ""
+echo "========== INCORRECT ANSWERS ============"
+
+if (( ${#INCORRECT_QUESTIONS[@]} == 0 )); then
+    echo "No incorrectly answered questions."
+else
+    for i in "${!INCORRECT_QUESTIONS[@]}"; do
+        echo "$((i + 1)). ${INCORRECT_QUESTIONS[$i]}"
+    done
+fi
+
+echo ""
+echo "=========================================="
+
 # ==========================================
 # FINAL RESULTS
 # ==========================================
@@ -210,5 +375,3 @@ else
 fi
 
 echo ""
-echo "Thank you for practicing Security+!"
-
