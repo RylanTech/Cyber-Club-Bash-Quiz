@@ -5,6 +5,12 @@
 # CompTIA Security+ SY0-701 Practice Quiz
 # ==========================================
 
+# Results output file
+RESULT_FILE="SEC&LinuxQuizResults.txt"
+
+# Clear previous results
+> "$RESULT_FILE"
+
 SCORE=0
 TOTAL=0
 CORRECT_QUESTIONS=()
@@ -310,75 +316,68 @@ ask_question \
 "A kernel" \
 "A version of Windows"
 
-
 # ==========================================
 # QUESTION REVIEW
 # ==========================================
 
-echo ""
-echo "=========================================="
-echo "             QUESTION REVIEW"
-echo "=========================================="
+{
+    echo "=========================================="
+    echo "             QUESTION REVIEW"
+    echo "=========================================="
 
-# Correct Answers
-echo ""
-echo "========== CORRECT ANSWERS =============="
+    # Correct Answers
+    echo ""
+    echo "========== CORRECT ANSWERS =============="
 
-if (( ${#CORRECT_QUESTIONS[@]} == 0 )); then
-    echo "No correctly answered questions."
-else
-    for i in "${!CORRECT_QUESTIONS[@]}"; do
-        echo "$((i + 1)). ${CORRECT_QUESTIONS[$i]}"
-    done
-fi
+    if (( ${#CORRECT_QUESTIONS[@]} == 0 )); then
+        echo "No correctly answered questions."
+    else
+        for i in "${!CORRECT_QUESTIONS[@]}"; do
+            echo ""
+            echo "$((i + 1)). ${CORRECT_QUESTIONS[$i]}"
+        done
+    fi
 
-# Incorrect Answers
-# Incorrect Answers
-echo ""
-echo "========== INCORRECT ANSWERS ============"
+    # Incorrect Answers
+    echo ""
+    echo "========== INCORRECT ANSWERS ============"
 
-if (( ${#INCORRECT_QUESTIONS[@]} == 0 )); then
-    echo "No incorrectly answered questions."
-else
-    for i in "${!INCORRECT_QUESTIONS[@]}"; do
-        IFS='|' read -r question your_answer correct_answer \
-            <<< "${INCORRECT_QUESTIONS[$i]}"
+    if (( ${#INCORRECT_QUESTIONS[@]} == 0 )); then
+        echo "No incorrectly answered questions."
+    else
+        for i in "${!INCORRECT_QUESTIONS[@]}"; do
 
-        echo ""
-        echo "$((i + 1)). $question"
-        echo "   $your_answer"
-        echo "   $correct_answer"
-    done
-fi
+            IFS='|' read -r question your_answer correct_answer \
+                <<< "${INCORRECT_QUESTIONS[$i]}"
 
-echo ""
-echo "=========================================="
+            echo ""
+            echo "$((i + 1)). $question"
+            echo "   $your_answer"
+            echo "   $correct_answer"
+        done
+    fi
+
+    echo ""
+    echo "=========================================="
+
+} | tee -a "$RESULT_FILE"
 
 # ==========================================
-# FINAL RESULTS
+# SAVE FINAL SCORE
 # ==========================================
 
 PERCENTAGE=$((SCORE * 100 / TOTAL))
 
-echo ""
-echo "=========================================="
-echo "             QUIZ RESULTS"
-echo "=========================================="
-echo "Student: $NAME"
-echo "Questions: $TOTAL"
-echo "Correct: $SCORE"
-echo "Incorrect: $((TOTAL - SCORE))"
-echo "Final Score: $PERCENTAGE%"
-echo "=========================================="
-
-if (( PERCENTAGE >= 90 )); then
-    echo "Excellent! Strong Security+ knowledge."
-elif (( PERCENTAGE >= 80 )); then
-    echo "Good job! Keep studying."
-elif (( PERCENTAGE >= 70 )); then
-    echo "Decent progress. Review missed concepts."
-else
-    echo "More studying recommended. Keep practicing!"
-fi
+{
+    echo ""
+    echo "============= FINAL RESULTS ============="
+    echo "Student: $NAME"
+    echo "Questions: $TOTAL"
+    echo "Correct: $SCORE"
+    echo "Incorrect: $((TOTAL - SCORE))"
+    echo "Final Score: $PERCENTAGE%"
+    echo "=========================================="
+} | tee -a "$RESULT_FILE"
 
 echo ""
+echo "Results saved to: $RESULT_FILE"
